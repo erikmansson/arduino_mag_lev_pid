@@ -7,14 +7,6 @@ LED blink codes:
   1  Setup finished, controller ready
   2  Integral term was maxed out (shut off)
   3  Calibration is way off (shut off)
-
-Hardware used in prototype:
-  Teensy 3.1
-  Honeywell SS59ET Hall sensor
-  5 Ohm, 69m, ⌀0,4mm coil
-  A decent MOSFET driver (VGS <= Arduino operating voltage)
-  10-15V PSU (add capacitors to cheaper PSUs)
-  200-600uF capacitor over the coil
 */
 
 const int pinLed = 13;
