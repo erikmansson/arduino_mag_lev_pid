@@ -84,14 +84,17 @@ void loop(){
     double input = signedSquare(readInput() - cal);
     double error = set - input;
 
-    double lastSmoothInput = smoothInput;
+    double lastSmoothInput = smoothInput; //for the derivative
 
+    //exponential moving average of input
     smoothInput = input*inputSmoothing +
       (1 - inputSmoothing)*smoothInput;
 
+    //ema of derivative
     smoothDeriv = derivSmoothing*(smoothInput - lastSmoothInput) +
       (1 - derivSmoothing)*smoothDeriv;
 
+    //decide if the controller should be active
     if(input >= thr){
       lastOverThr = now;
       active = true;
@@ -108,7 +111,7 @@ void loop(){
       double p = kp * error;
       double d = -kd * smoothDeriv * loopFreq;
 
-      if(i>1.0) shutoff(2);
+      if(i>1.0) shutoff(2); //we don't want to fry out electronics
 
       i = constrainPct(i);
       output = constrainPct(signedSquare(p + i + d));
