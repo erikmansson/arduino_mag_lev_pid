@@ -1,5 +1,6 @@
 /*
 Arduino Magnetic Levitator
+PID controller
 Written for the Teensy 3
 By Erik Månsson
 
@@ -111,7 +112,7 @@ void loop(){
       double p = kp * error;
       double d = -kd * smoothDeriv * loopFreq;
 
-      if(i>1.0) shutoff(2); //we don't want to fry out electronics
+      if(i>1.0) shutoff(2); //we don't want to fry our electronics
 
       i = constrainPct(i);
       output = constrainPct(signedSquare(p + i + d));

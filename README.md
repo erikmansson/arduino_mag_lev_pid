@@ -1,6 +1,8 @@
-arduino-mag-lev
+arduino_mag_lev_pid
 ===============
 Arduino Magnetic Levitator
+
+PID controller
 
 Written for the Teensy 3
 
