@@ -14,28 +14,28 @@ const int pinLed = 13;
 const int pinDriver = 10;
 const int pinInput = 23;
 
-//Teensy PWM mode setup
-const int pwmResMode = 13;
+//PWM setup (Teensy)
+const int pwmBits = 13;
 const int pwmFreq = 5859; //[Hz]
 
-const double pwmRange = 8191;
-const double analogRange = 1023;
+//ADC setup
+const int adcBits = 12;
 
 const long thrTimeout = 1000 * 200; //[us]
-const int loopFreq = 2000; //[Hz]
+const int loopFreq = 1200; //[Hz]
 
 const long dtMicros = roundToInt(1000000/double(loopFreq)); //[us] used for main loop
 
-//exponential smoothing decay (0 to 1)
-//1 results in no smoothing
-const double inputSmoothing = 0.6;
-const double derivSmoothing = 0.6;
+//exponential smoothing decay
+//0.4 to 1.0 is okay, where 1.0 results in no smoothing
+const double inputSmoothing = 0.60;
+const double derivSmoothing = 0.60;
 
-const double kp = 10.0;
-const double ki = 30.0;
-const double kd = 0.08;
+const double kp = 8.0;
+const double ki = 25.0;
+const double kd = 0.13;
 
-const double set = 0.020;
+const double set = 0.018;
 const double thr = 0.008;
 
 long lastLoop = -dtMicros;
@@ -48,26 +48,27 @@ double smoothInput = 0;
 double smoothDeriv = 0;
 
 void setup(){
-  pinMode(pinInput, INPUT);
   pinMode(pinLed, OUTPUT);
 
   //set up PWM (Teensy)
   pinMode(pinDriver, OUTPUT);
   analogWriteFrequency(pinDriver, pwmFreq);
-  analogWriteResolution(pwmResMode);
+  analogWriteResolution(pwmBits);
   writePWM(0);
-
-  /* debug
-  Serial.begin(115200);
-  */
+  
+  //set up ADC
+  pinMode(pinInput, INPUT);
+  analogReadResolution(adcBits);
+  analogRead(pinInput);
+  
+  //Serial.begin(115200);
 
   //calibration
-  readInput(); //reset adc
   const int nCalReads = 10; //number of readings
   const int calDelay = 5; //[ms] time between readings
   for(int i=0;i<nCalReads;i++){
     delay(calDelay);
-    cal += readInput();
+    cal += readADC();
   }
   cal = cal / nCalReads; //take the average
 
@@ -82,7 +83,7 @@ void loop(){
   if(now - lastLoop >= dtMicros){
     lastLoop = now;
 
-    double input = signedSquare(readInput() - cal);
+    double input = signedSquare(readADC() - cal);
     double error = set - input;
 
     double lastSmoothInput = smoothInput; //for the derivative
@@ -124,13 +125,9 @@ void loop(){
 
     writePWM(output);
     digitalWrite(pinLed, active);
-
+    
     /* debug
-    Serial.print(p);
-    Serial.print("\t");
     Serial.print(i);
-    Serial.print("\t");
-    Serial.print(d);
     Serial.print("\t");
     Serial.println(output);
     */
@@ -160,12 +157,16 @@ double constrainPct(double val){
   }
 }
 
-double readInput(){
-  return analogRead(pinInput) / analogRange;
+double readADC(){
+  static double adcRange = pow(2, adcBits) - 1;
+
+  return analogRead(pinInput) / adcRange;
 }
 
 //takes a double from 0 to 1, like 0.55
 void writePWM(double dc){
+  static double pwmRange = pow(2, pwmBits) - 1;;
+
   int pwmOutput = int(dc * pwmRange + 0.5);
   if(pwmOutput > pwmRange){
     pwmOutput = pwmRange;
