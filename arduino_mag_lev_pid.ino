@@ -1,7 +1,5 @@
 /*
-Arduino Magnetic Levitator
-PID controller
-Written for the Teensy 3
+Arduino Magnetic Levitator - PID controller
 By Erik Månsson
 
 LED blink codes:
