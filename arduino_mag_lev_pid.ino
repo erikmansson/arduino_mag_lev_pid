@@ -1,6 +1,6 @@
 /*
 Arduino Magnetic Levitator - PID controller
-By Erik Månsson
+https://github.com/erikmansson/arduino_mag_lev_pid/
 
 LED blink codes:
   1  Setup finished, controller ready
