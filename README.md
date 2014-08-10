@@ -1,12 +1,8 @@
 arduino_mag_lev_pid
 ===============
-Arduino Magnetic Levitator
-
-PID controller
+Arduino Magnetic Levitator - PID controller
 
 Written for the Teensy 3
-
-By Erik Månsson
 
 A demo can be seen here: http://youtu.be/AeTEj5-hTBc
 
